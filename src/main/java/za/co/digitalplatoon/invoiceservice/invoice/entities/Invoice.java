@@ -15,7 +15,7 @@ public class Invoice {
     private String client;
     private  Long vatRate;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date invoiceDate ;
 
     @OneToMany(cascade = CascadeType.ALL)
