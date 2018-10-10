@@ -64,6 +64,9 @@ public class Invoice {
     }
 
     public void setVatRate(Long vatRate) {
+        if (vatRate == null) {
+            vatRate = 15L;
+        }
         this.vatRate = vatRate;
     }
 
