@@ -13,9 +13,9 @@ public class Invoice {
     private Long id;
 
     private String client;
-    private  Long vatRate;
+    private Long vatRate=15L; //default if not entered
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date invoiceDate ;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -29,14 +29,12 @@ public class Invoice {
         this.vatRate = vatRate;
         this.invoiceDate = invoiceDate;
         this.lineItems = lineItems;
-
     }
     @PrePersist
     public void prePersist(){
         invoiceDate = new Date();
     }
     //getters and setters
-
     public Long getId() {
         return id;
     }
@@ -56,7 +54,6 @@ public class Invoice {
     public Date getInvoiceDate() {
         return invoiceDate;
     }
-
 
     public void setInvoiceDate(Date invoiceDate) {
         this.invoiceDate = invoiceDate;
@@ -97,8 +94,7 @@ public class Invoice {
     }
     //getTotal calculations
     public BigDecimal getTotal(){
-        BigDecimal sub = getSubTotal().add(getVat());
-        return sub.setScale(2,RoundingMode.HALF_UP);
+        BigDecimal total = getSubTotal().add(getVat());
+        return total.setScale(2,RoundingMode.HALF_UP);
     }
-
 }
