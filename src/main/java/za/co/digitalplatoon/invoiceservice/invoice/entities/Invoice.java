@@ -3,22 +3,27 @@ package za.co.digitalplatoon.invoiceservice.invoice.entities;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.TemporalType.DATE;
 
 @Entity
 public class Invoice {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     private String client;
     private Long vatRate=15L; //default if not entered
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(DATE)
     private Date invoiceDate ;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = ALL)
     @JoinColumn(name = "invoice_id")
     List<LineItem> lineItems;
 
@@ -64,10 +69,7 @@ public class Invoice {
     }
 
     public void setVatRate(Long vatRate) {
-        if (vatRate == null) {
-            vatRate = 15L;
-        }
-        this.vatRate = vatRate;
+        this.vatRate = vatRate != null ? vatRate : 15L;
     }
 
     public List<LineItem> getLineItems() {
@@ -79,13 +81,10 @@ public class Invoice {
     }
     //getSubTotal Calculations
     public BigDecimal getSubTotal(){
-
-        BigDecimal subtotal = new BigDecimal("0");
-
-        for(LineItem lineItem : getLineItems()){
-            subtotal = subtotal.add(lineItem.getLineItemTotal());
-        }
-        return subtotal.setScale(2,RoundingMode.HALF_UP);
+        return getLineItems().stream()
+                .map(LineItem::getLineItemTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2,RoundingMode.HALF_UP);
     }
     //getVat Calculations
     public BigDecimal getVat(){

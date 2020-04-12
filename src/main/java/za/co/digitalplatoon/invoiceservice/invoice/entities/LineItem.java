@@ -1,8 +1,13 @@
 package za.co.digitalplatoon.invoiceservice.invoice.entities;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 public class LineItem {
@@ -13,7 +18,7 @@ public class LineItem {
     private String description;
     private BigDecimal unitPrice;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     private Invoice invoice;
 
     public LineItem(){}
@@ -57,8 +62,9 @@ public class LineItem {
     }
     //getLineItemTotal calculations
     public BigDecimal getLineItemTotal(){
-        BigDecimal total = getUnitPrice().multiply(new BigDecimal(getQuantity()));
-        return total.setScale(2, RoundingMode.HALF_UP);
+       return getUnitPrice()
+               .multiply(BigDecimal.valueOf(getQuantity()))
+               .setScale(2, RoundingMode.HALF_UP);
     }
 
 }
